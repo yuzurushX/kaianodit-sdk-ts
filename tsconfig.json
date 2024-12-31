@@ -1,0 +1,16 @@
+{
+ "compilerOptions": {
+   "target": "es2022",
+   "module": "ES2022",
+   "declaration": true,
+   "outDir": "./dist",
+   "strict": true,
+   "esModuleInterop": true,
+   "skipLibCheck": true,
+   "forceConsistentCasingInFileNames": true,
+   "typeRoots": ["./node_modules/@types", "./src/types"],
+   "moduleResolution": "node"
+ },
+ "include": ["src", "tests/token.test.ts", "tests/blockchain.test.ts", "tests/nft.test.ts"],
+ "exclude": ["node_modules", "dist", "tests"]
+}
