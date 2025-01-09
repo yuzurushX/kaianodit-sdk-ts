@@ -1,17 +1,25 @@
-import { ApiResponse, PaginationParams, DateRangeParams, BlockRangeParams, TransactionParams, TokenTransferParams, NftTransferParams, NftToken } from './types';
+import { ApiResponse, PaginationParams, DateRangeParams, BlockRangeParams, TransactionParams, TokenTransferParams, NftTransferParams, NftToken, WebhookEventType, WebhookUpdatePayload, WebhookHistoryParams, WebhookCondition, WebhookParams } from './types';
 declare class KaiaNodit {
     private client;
+    private nodeClient;
     nft: NFTService;
     token: TokenService;
     statistics: StatisticsService;
     blockchain: BlockchainService;
-    constructor(apiKey: string, baseUrl?: string);
+    node: NodeService;
+    webhook: WebhookService;
+    constructor(apiKey: string, network?: string, baseUrl?: string);
 }
 declare class Client {
     private apiKey;
     private baseUrl;
-    constructor(apiKey: string, baseUrl: string);
+    private network;
+    constructor(apiKey: string, baseUrl: string, network: string);
     post(endpoint: string, payload: any): Promise<any>;
+    postNode(payload: any): Promise<any>;
+    get(endpoint: string, params: any): Promise<ApiResponse>;
+    patch(endpoint: string, payload: any): Promise<ApiResponse>;
+    delete(endpoint: string): Promise<ApiResponse>;
 }
 declare class NFTService {
     private client;
@@ -84,5 +92,50 @@ declare class BlockchainService {
     isContract(address: string): Promise<ApiResponse>;
     searchEvents(contractAddress: string, eventNames: string[], abi: Record<string, any>, params?: PaginationParams & DateRangeParams & BlockRangeParams): Promise<ApiResponse>;
 }
-export { KaiaNodit };
+declare class NodeService {
+    private client;
+    constructor(client: Client);
+    getChainId(): Promise<ApiResponse>;
+    getBlockNumber(): Promise<ApiResponse>;
+    getBalance(address: string, blockParameter?: string): Promise<ApiResponse>;
+    call(transaction: any, blockParameter?: string): Promise<ApiResponse>;
+    createAccessList(transaction: any, blockParameter?: string): Promise<ApiResponse>;
+    estimateGas(transaction: any): Promise<ApiResponse>;
+    getFeeHistory(blockCount: string, newestBlock: string, rewardPercentiles: number[]): Promise<ApiResponse>;
+    getGasPrice(): Promise<ApiResponse>;
+    getBlockByHash(hash: string): Promise<ApiResponse>;
+    getBlockByNumber(number: string): Promise<ApiResponse>;
+    getBlockReceipts(blockHash: string): Promise<ApiResponse>;
+    getTransactionByHash(hash: string): Promise<ApiResponse>;
+    getTransactionByBlockHashAndIndex(blockHash: string, index: string): Promise<ApiResponse>;
+    getTransactionByBlockNumberAndIndex(blockNumber: string, index: string): Promise<ApiResponse>;
+    getTransactionReceipt(hash: string): Promise<ApiResponse>;
+    getTransactionCount(address: string): Promise<ApiResponse>;
+    getStorageAt(address: string, position: string): Promise<ApiResponse>;
+    getCode(address: string): Promise<ApiResponse>;
+    getBlockTransactionCountByHash(hash: string): Promise<ApiResponse>;
+    getBlockTransactionCountByNumber(number: string): Promise<ApiResponse>;
+    getFilterChanges(filterId: string): Promise<ApiResponse>;
+    getFilterLogs(filterId: string): Promise<ApiResponse>;
+    getLogs(filter: any): Promise<ApiResponse>;
+    getProof(address: string, storageKeys: string[], blockParameter?: string): Promise<ApiResponse>;
+    getMaxPriorityFeePerGas(): Promise<ApiResponse>;
+    newBlockFilter(): Promise<ApiResponse>;
+    newFilter(filter: any): Promise<ApiResponse>;
+    newPendingTransactionFilter(): Promise<ApiResponse>;
+    sendRawTransaction(signedTransactionData: string): Promise<ApiResponse>;
+    uninstallFilter(filterId: string): Promise<ApiResponse>;
+}
+declare class WebhookService {
+    private client;
+    private network;
+    private baseEndpoint;
+    constructor(client: Client, network: string);
+    getWebhooks(params: WebhookParams): Promise<ApiResponse>;
+    createWebhook(eventType: WebhookEventType | string, webhookUrl: string, description: string, condition: WebhookCondition): Promise<ApiResponse>;
+    createAddressActivityWebhook(webhookUrl: string, addresses: string[], description: string): Promise<ApiResponse>;
+    updateWebhook(webhookId: string, updates: WebhookUpdatePayload): Promise<ApiResponse>;
+    deleteWebhook(webhookId: string): Promise<ApiResponse>;
+    getWebhookHistory(params: WebhookHistoryParams): Promise<ApiResponse>;
+}
 export default KaiaNodit;
