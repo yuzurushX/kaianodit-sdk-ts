@@ -13,8 +13,8 @@ npm install kaianodit-ts
 ```typescript
 import KaiaNodit from 'kaianodit-ts';
 
-// Initialize the client with Kaia chain
-const client = new KaiaNodit('YOUR_API_KEY');
+// Initialize the client with Kaia chain (mainnet or testnet)
+const client = new KaiaNodit('YOUR_API_KEY', 'mainnet'); // or 'testnet'
 
 // Start making requests to Kaia chain
 const main = async () => {
@@ -51,6 +51,19 @@ const main = async () => {
 
 - **Kaia Statistics**
   - Account analytics on Kaia chain
+
+- **Node API Operations**
+  - Direct RPC node access
+  - Chain data queries
+  - Transaction management
+  - Smart contract interactions
+  - Filter and log management
+
+- **Webhook Operations**
+  - Address activity monitoring
+  - Custom event notifications
+  - Webhook management
+  - History tracking
 
 ## Services
 
@@ -102,6 +115,46 @@ const events = await client.blockchain.searchEvents(
 ```typescript
 // Get account statistics on Kaia chain
 const stats = await client.statistics.getAccountStats('0x...');
+```
+
+### Node Service
+
+```typescript
+// Get chain information
+const chainId = await client.node.getChainId();
+
+// Get latest block number
+const blockNumber = await client.node.getBlockNumber();
+
+// Send raw transaction
+const txHash = await client.node.sendRawTransaction('0x...');
+
+// Get transaction receipt
+const receipt = await client.node.getTransactionReceipt('0x...');
+```
+
+### Webhook Service
+
+```typescript
+// Create address activity webhook
+const webhook = await client.webhook.createAddressActivityWebhook(
+    'https://your-webhook-url.com',
+    ['0x...', '0x...'], // addresses to monitor
+    'Monitor address activities'//description
+);
+
+// Get webhook history
+const history = await client.webhook.getWebhookHistory({
+    subscriptionId: 'webhook-id',
+    limit: 10,
+    offset: 0
+});
+
+// Update webhook
+await client.webhook.updateWebhook('webhook-id', {
+    description: 'Updated description',
+    notification: { webhookUrl: 'https://new-webhook-url.com' }
+});
 ```
 
 ## Pagination and Parameters
